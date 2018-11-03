@@ -7,21 +7,21 @@ import java.util.HashMap;
 public class LRUCache<T, U> implements Cache<T, U> {
 
 	private int _numberOfMisses = 0;
-	private int _capacity = 0;
+	private int _capacity;
 	private int _numberOfNodes = 0;
 	private DataProvider<T, U> _dataProvider;
 
-	private HashMap<T, Node> _map = new HashMap<T, Node>();
+	private HashMap<T, Node> _map = new HashMap<>();
 
-	Node _head = null;
-	Node _tail = null;
+	private Node _head = null;
+	private Node _tail = null;
 
-	class Node {
+	private class Node {
         Node _next = null;
         U _data;
         T _key;
 
-        public Node (U data, T key) {
+        private Node (U data, T key) {
             _data = data;
             _key = key;
         }
@@ -31,7 +31,7 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	 * @param provider the data provider to consult for a cache miss
 	 * @param capacity the exact number of (key,value) pairs to store in the cache
 	 */
-	public LRUCache (DataProvider<T, U> provider, int capacity) {
+	LRUCache (DataProvider<T, U> provider, int capacity) {
 	    _capacity = capacity;
         _dataProvider = provider;
 	}
