@@ -19,5 +19,6 @@ public class CacheTest {
 		System.out.println(cache.get(0));
 		System.out.println(cache.get(1));
 		System.out.println(cache.get(2));
+		System.out.println(cache.get(0));
 	}
 }
