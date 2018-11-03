@@ -19,9 +19,11 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	class Node {
         Node _next = null;
         U _data;
+        T _key;
 
-        public Node (U data) {
+        public Node (U data, T key) {
             _data = data;
+            _key = key;
         }
     }
 
@@ -45,21 +47,16 @@ public class LRUCache<T, U> implements Cache<T, U> {
             // if it is at capacity, remove the head and add the new head
         if (_map.containsKey(key)) {
             Node n = _map.get(key);
-            System.out.println("Found the value in the cache!");
-            System.out.println("Current number of misses is " + _numberOfMisses);
             return n._data;
         }
         else {
             _numberOfMisses += 1;
             U data = _dataProvider.get(key);
-            _map.remove(key);
-            Node node = new Node(data);
-            _map.put(key, node);
+            Node node = new Node(data, key);
             if(_numberOfNodes == 0)
             {
                 _head = node;
                 _tail = node;
-                System.out.println("Number of nodes was 0");
                 _numberOfNodes += 1;
             }
             else if(_numberOfNodes < _capacity)
@@ -67,16 +64,15 @@ public class LRUCache<T, U> implements Cache<T, U> {
                 _tail._next = node;
                 _tail = node;
                 _numberOfNodes += 1;
-                System.out.println("Number of nodes was less than capacity");
             }
             else
             {
+                _map.remove(_head._key);
                 _head = _head._next;
+                _tail._next = node;
                 _tail = node;
-                _tail._next = null;
-                System.out.println("Number of nodes was equal to capacity");
             }
-            System.out.println("Current number of misses is " + _numberOfMisses);
+            _map.put(key, node);
             return data;
         }
 	}
