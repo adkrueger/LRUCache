@@ -12,8 +12,8 @@ public class CacheTest {
 	public void testGetNumMisses () {
 		NameProvider nameProvider = new NameProvider();
 		nameProvider.addName("bo", "Bob");
-		nameProvider.addName("bi", "Bill");
 		nameProvider.addName("jo", "Joe");
+		nameProvider.addName("bi", "Bill");
 
 		DataProvider<String,String> provider = nameProvider; // Need to instantiate an actual DataProvider
 		Cache<String,String> cache = new LRUCache<>(provider,5);
@@ -34,6 +34,7 @@ public class CacheTest {
 	@Test
     public void testGetNumMisses2 () {
         NameProvider nameProvider = new NameProvider();
+
         nameProvider.addName("bo", "Bob");
         nameProvider.addName("bi", "Bill");
         nameProvider.addName("jo", "Joe");
