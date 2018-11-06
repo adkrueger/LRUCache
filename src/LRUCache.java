@@ -16,6 +16,10 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	private Node _head = null;
 	private Node _tail = null;
 
+
+    /**
+     * An implementation of a Node that contains a key and corresponding data
+     */
 	private class Node {
         Node _next = null;
         U _data;
