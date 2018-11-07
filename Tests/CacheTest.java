@@ -16,6 +16,8 @@ public class CacheTest {
 		anyProvider.addObject("bo", "Bob");
 		anyProvider.addObject("jo", "Joe");
 		anyProvider.addObject("bi", "Bill");
+        anyProvider.addObject("jo", "Joey"); // Already exists in DataProvider, warn user
+        anyProvider.addObject("no", "Noel");
 
 		Cache<String,String> cache = new LRUCache<String, String>(anyProvider, 5);
 
@@ -30,6 +32,10 @@ public class CacheTest {
         assertEquals(cache.get("jo"), "Joe");
         // Now there should still be 3 misses, as everything was in the cache
         assertEquals(cache.getNumMisses(), 3);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+        assertEquals(cache.get("no"), "Noel");
+        assertEquals(cache.getNumMisses(), 4);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
 	}
 
     // Test with names and keys as first two characters
@@ -147,6 +153,26 @@ public class CacheTest {
         assertEquals(cache.get(true), anyProvider);
         assertNull(cache.get(randomObject));
 
+        assertEquals(cache.getNumMisses(), 2);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+    }
+
+    @Test
+    public void testLRUCache2 () {
+        AnyProvider anyProvider = new AnyProvider();
+        anyProvider.addObject("FB", "FaceBook");
+        anyProvider.addObject("Ea", "Electronic Arts");
+
+        Cache cache = new LRUCache<Object, Object>(anyProvider, 2);
+
+        assertEquals(cache.get("Ea"), "Electronic Arts");
+        assertEquals(cache.get("FB"), "FaceBook");
+        assertEquals(cache.getNumMisses(), 2);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+
+        // Same, no extra misses
+        assertEquals(cache.get("Ea"), "Electronic Arts");
+        assertEquals(cache.get("FB"), "FaceBook");
         assertEquals(cache.getNumMisses(), 2);
         assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
     }

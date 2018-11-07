@@ -8,7 +8,6 @@ public class LRUCache<T, U> implements Cache<T, U> {
 
 	private int _numberOfMisses = 0;
 	private int _capacity;
-	private int _numberOfNodes = 0;
 	private DataProvider<T, U> _dataProvider;
 
 	private HashMap<T, Node> _map = new HashMap<>();
@@ -57,17 +56,15 @@ public class LRUCache<T, U> implements Cache<T, U> {
             _numberOfMisses += 1;
             U data = _dataProvider.get(key);
             Node node = new Node(data, key);
-            if(_numberOfNodes == 0)
+            if(_map.size() == 0)
             {
                 _head = node;
                 _tail = node;
-                _numberOfNodes += 1;
             }
-            else if(_numberOfNodes < _capacity)
+            else if(_map.size() < _capacity)
             {
                 _tail._next = node;
                 _tail = node;
-                _numberOfNodes += 1;
             }
             else
             {

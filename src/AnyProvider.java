@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.HashMap;
 
 public class AnyProvider implements DataProvider {
@@ -8,6 +9,7 @@ public class AnyProvider implements DataProvider {
 
 
     public Object get (Object key) {
+        numberOfMisses++;
         return map.get(key);
     }
 
@@ -17,9 +19,8 @@ public class AnyProvider implements DataProvider {
 
     public void addObject(Object key, Object obj)
     {
-        numberOfMisses++;
         if(map.containsKey(key)) {
-            throw new Error("Key already exists in the hashmap");
+            System.err.println("Key was already used, ignoring new Object: " + obj.toString());
         }
         else
         {
