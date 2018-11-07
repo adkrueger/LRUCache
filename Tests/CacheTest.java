@@ -1,22 +1,23 @@
 import static org.junit.Assert.*;
-import org.junit.Before;
+
 import org.junit.Test;
+
+import javax.tools.JavaCompiler;
 
 /**
  * Code to test an <tt>LRUCache</tt> implementation.
  */
 public class CacheTest {
 
-
+    // Test with names and keys as first two characters
 	@Test
 	public void testGetNumMisses () {
-		NameProvider nameProvider = new NameProvider();
-		nameProvider.addName("bo", "Bob");
-		nameProvider.addName("jo", "Joe");
-		nameProvider.addName("bi", "Bill");
+		AnyProvider anyProvider = new AnyProvider();
+		anyProvider.addObject("bo", "Bob");
+		anyProvider.addObject("jo", "Joe");
+		anyProvider.addObject("bi", "Bill");
 
-		DataProvider<String,String> provider = nameProvider; // Need to instantiate an actual DataProvider
-		Cache<String,String> cache = new LRUCache<>(provider,5);
+		Cache<String,String> cache = new LRUCache<String, String>(anyProvider, 5);
 
 		assertEquals(cache.getNumMisses(), 0);
 		assertEquals(cache.get("bo"), "Bob");
@@ -31,18 +32,18 @@ public class CacheTest {
         assertEquals(cache.getNumMisses(), 3);
 	}
 
+    // Test with names and keys as first two characters
 	@Test
     public void testGetNumMisses2 () {
-        NameProvider nameProvider = new NameProvider();
+        AnyProvider anyProvider = new AnyProvider();
 
-        nameProvider.addName("bo", "Bob");
-        nameProvider.addName("bi", "Bill");
-        nameProvider.addName("jo", "Joe");
-        nameProvider.addName("zi", "Zim");
-        nameProvider.addName("br", "Brandon");
+        anyProvider.addObject("bo", "Bob");
+        anyProvider.addObject("bi", "Bill");
+        anyProvider.addObject("jo", "Joe");
+        anyProvider.addObject("zi", "Zim");
+        anyProvider.addObject("br", "Brandon");
 
-        DataProvider<String,String> provider = nameProvider;
-        Cache<String,String> cache = new LRUCache<>(provider, 4); // Only four capacity
+        Cache<String,String> cache = new LRUCache<String, String>(anyProvider, 4); // Only four capacity
 
         assertEquals(cache.getNumMisses(), 0);
         assertEquals(cache.get("bi"), "Bill");
@@ -56,16 +57,17 @@ public class CacheTest {
         assertEquals(cache.getNumMisses(), 7); // A total of 7 misses
     }
 
+    // Test with names and keys as first two characters
     @Test
     public void testGetNumMisses3() {
-        NameProvider nameProvider = new NameProvider();
-        nameProvider.addName("bo", "Bob");
-        nameProvider.addName("bi", "Bill");
-        nameProvider.addName("jo", "Joe");
-        nameProvider.addName("zi", "Zim");
-        nameProvider.addName("br", "Brandon");
+        AnyProvider anyProvider = new AnyProvider();
+        anyProvider.addObject("bo", "Bob");
+        anyProvider.addObject("bi", "Bill");
+        anyProvider.addObject("jo", "Joe");
+        anyProvider.addObject("zi", "Zim");
+        anyProvider.addObject("br", "Brandon");
 
-        Cache<String, String> cache = new LRUCache<> (nameProvider, 3);
+        Cache<String, String> cache = new LRUCache<String, String> (anyProvider, 3);
 
         assertEquals(cache.get("bi"), "Bill");   // misses += 1
         cache.get("bi");
@@ -78,16 +80,17 @@ public class CacheTest {
 
     }
 
+    // Test with names and keys as first two characters
     @Test
     public void testGetNumMisses4() {
-        NameProvider nameProvider = new NameProvider();
-        nameProvider.addName("bo", "Bob");
-        nameProvider.addName("bi", "Bill");
-        nameProvider.addName("jo", "Joe");
-        nameProvider.addName("zi", "Zim");
-        nameProvider.addName("br", "Brandon");
+        AnyProvider anyProvider = new AnyProvider();
+        anyProvider.addObject("bo", "Bob");
+        anyProvider.addObject("bi", "Bill");
+        anyProvider.addObject("jo", "Joe");
+        anyProvider.addObject("zi", "Zim");
+        anyProvider.addObject("br", "Brandon");
 
-        Cache<String, String> cache = new LRUCache<> (nameProvider, 3);
+        Cache<String, String> cache = new LRUCache<String, String> (anyProvider, 3);
 
         assertEquals(cache.get("bo"), "Bob");
         assertEquals(cache.get("jo"), "Joe");
@@ -98,16 +101,53 @@ public class CacheTest {
         assertEquals(cache.getNumMisses(), 5);
     }
 
+    // Test with names and keys as first two characters
     @Test
     public void testLRUCache () {
-        NameProvider nameProvider = new NameProvider();
-        nameProvider.addName("li", "Liz");
-        nameProvider.addName("sa", "Sadie");
-        nameProvider.addName("ba", "Bailey");
+        AnyProvider anyProvider = new AnyProvider();
+        anyProvider.addObject("li", "Liz");
+        anyProvider.addObject("sa", "Sadie");
+        anyProvider.addObject("ba", "Bailey");
 
-        DataProvider<String,String> provider = nameProvider;
-        Cache<String,String> cache = new LRUCache<>(provider, 3);
+        Cache<String,String> cache = new LRUCache<String, String>(anyProvider, 3);
 
         assertNull(cache.get("zz"));     // There is no 4th key, so should return null
+    }
+
+    // Some more tests, now with random Object types
+    @Test
+    public void testBrutal () {
+	    AnyProvider anyProvider = new AnyProvider();
+	    anyProvider.addObject(null, 1.0f / 0.0f);
+        anyProvider.addObject(1.0f / 0.0f, "To Infinity...");
+
+	    Cache<Object, Object> cache = new LRUCache<Object, Object>(anyProvider, 2);
+
+	    assertEquals(cache.get(null), 1.0f / 0.0f);
+	    assertEquals(cache.get(1.0f / 0.0f), "To Infinity...");
+    }
+
+    // Let's see if the LRUCache's numberOfMisses matches the number of times it access the data provider
+    @Test
+    public void testProviderNumMisses () {
+        AnyProvider anyProvider = new AnyProvider();
+        anyProvider.addObject(true, anyProvider); // It's technically an Object
+        Object randomObject = new Object(); // Create an object to test with
+        anyProvider.addObject(randomObject, null);
+
+        Cache<Object, Object> cache = new LRUCache<Object, Object>(anyProvider, 2);
+
+        assertEquals(cache.get(true), anyProvider);
+        assertNull(cache.get(randomObject));
+
+        // Now to check numberOfMisses
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+
+        // Number of misses should stay at 2
+        assertEquals(cache.get(true), anyProvider);
+        assertNull(cache.get(randomObject));
+
+        assertEquals(cache.getNumMisses(), 2);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
     }
 }
