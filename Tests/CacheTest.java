@@ -2,8 +2,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import javax.tools.JavaCompiler;
-
 /**
  * Code to test an <tt>LRUCache</tt> implementation.
  */
@@ -175,4 +173,21 @@ public class CacheTest {
         assertEquals(cache.getNumMisses(), 2);
         assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
     }
+
+    @Test
+    public void testCacheInACache () {
+        AnyProvider innerProvider = new AnyProvider();
+        innerProvider.addObject("inner", "Inner Cache");
+
+        Cache<Object, Object> innerCache = new LRUCache<Object, Object>(innerProvider, 1);
+
+        AnyProvider outerProvider = new AnyProvider();
+        outerProvider.addObject("Inner Cache", "Outer Cache");
+
+        Cache<Object, Object> outerCache = new LRUCache<Object, Object>(outerProvider, 1);
+
+        assertEquals(outerCache.get(innerCache.get("inner")), "Outer Cache");
+        assertEquals(outerCache.getNumMisses() + innerCache.getNumMisses(), 2);
+        assertEquals(innerProvider.getNumberOfMisses() + outerProvider.getNumberOfMisses(), 2);
+	}
 }
