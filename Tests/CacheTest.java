@@ -2,6 +2,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import java.util.Random;
+
 /**
  * Code to test an <tt>LRUCache</tt> implementation.
  */
@@ -117,6 +119,33 @@ public class CacheTest {
         assertNull(cache.get("zz"));     // There is no 4th key, so should return null
     }
 
+    @Test
+    public void testLRUCache2 () {
+        AnyProvider anyProvider = new AnyProvider();
+        anyProvider.addObject("li", "Liz");
+        anyProvider.addObject( 5, "Sadie");
+        anyProvider.addObject( "ba", "Bailey");
+
+        Cache<Object,String> cache = new LRUCache<Object, String>(anyProvider, 2);
+
+        cache.get("li");
+        cache.get(5);
+
+        assertEquals(cache.getNumMisses(), 2);
+
+        cache.get("li");
+        cache.get(5);
+        cache.get("ba");
+
+        assertEquals(cache.getNumMisses(), 3);
+
+        cache.get("li");
+
+        assertEquals(cache.getNumMisses(), 4);
+
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+    }
+
     // Some more tests, now with random Object types
     @Test
     public void testBrutal () {
@@ -190,4 +219,20 @@ public class CacheTest {
         assertEquals(outerCache.getNumMisses() + innerCache.getNumMisses(), 2);
         assertEquals(innerProvider.getNumberOfMisses() + outerProvider.getNumberOfMisses(), 2);
 	}
+
+	@Test
+    public void test99Problems () {
+	    AnyProvider anyProvider = new AnyProvider();
+	    for (int i = 0; i < 99; i++) {
+	        Object iString = i;
+	        anyProvider.addObject(i, iString.toString());
+        }
+        Cache<Object, Object> cache = new LRUCache<Object, Object>(anyProvider, 99);
+        for (int i = 0; i < 99; i++) {
+            Object iString = i;
+            assertEquals(cache.get(i), iString.toString());
+        }
+        assertEquals(cache.getNumMisses(), 99);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+    }
 }
