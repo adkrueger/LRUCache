@@ -13,11 +13,11 @@ public class AnyProvider implements DataProvider {
         return map.get(key);
     }
 
-    public int getNumberOfMisses() {
+    int getNumberOfMisses() {
         return numberOfMisses;
     }
 
-    public void addObject(Object key, Object obj)
+    void addObject(Object key, Object obj)
     {
         if(map.containsKey(key)) {
             System.err.println("Key was already used, ignoring new Object: " + obj.toString());

@@ -16,7 +16,6 @@ public class CacheTest {
 		anyProvider.addObject("bo", "Bob");
 		anyProvider.addObject("jo", "Joe");
 		anyProvider.addObject("bi", "Bill");
-        anyProvider.addObject("jo", "Joey"); // Already exists in DataProvider, warn user
         anyProvider.addObject("no", "Noel");
 
 		Cache<String,String> cache = new LRUCache<String, String>(anyProvider, 5);
@@ -133,6 +132,26 @@ public class CacheTest {
 	    assertEquals(cache.get(1.0f / 0.0f), "To Infinity...");
     }
 
+    @Test
+    public void testBrutal2 () {
+        AnyProvider anyProvider = new AnyProvider();
+        anyProvider.addObject("FB", "FaceBook");
+        anyProvider.addObject("Ea", "Electronic Arts");
+
+        Cache cache = new LRUCache<Object, Object>(anyProvider, 2);
+
+        assertEquals(cache.get("Ea"), "Electronic Arts");
+        assertEquals(cache.get("FB"), "FaceBook");
+        assertEquals(cache.getNumMisses(), 2);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+
+        // Same, no extra misses
+        assertEquals(cache.get("Ea"), "Electronic Arts");
+        assertEquals(cache.get("FB"), "FaceBook");
+        assertEquals(cache.getNumMisses(), 2);
+        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
+    }
+
     // Let's see if the LRUCache's numberOfMisses matches the number of times it access the data provider
     @Test
     public void testProviderNumMisses () {
@@ -153,26 +172,6 @@ public class CacheTest {
         assertEquals(cache.get(true), anyProvider);
         assertNull(cache.get(randomObject));
 
-        assertEquals(cache.getNumMisses(), 2);
-        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
-    }
-
-    @Test
-    public void testLRUCache2 () {
-        AnyProvider anyProvider = new AnyProvider();
-        anyProvider.addObject("FB", "FaceBook");
-        anyProvider.addObject("Ea", "Electronic Arts");
-
-        Cache cache = new LRUCache<Object, Object>(anyProvider, 2);
-
-        assertEquals(cache.get("Ea"), "Electronic Arts");
-        assertEquals(cache.get("FB"), "FaceBook");
-        assertEquals(cache.getNumMisses(), 2);
-        assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
-
-        // Same, no extra misses
-        assertEquals(cache.get("Ea"), "Electronic Arts");
-        assertEquals(cache.get("FB"), "FaceBook");
         assertEquals(cache.getNumMisses(), 2);
         assertEquals(cache.getNumMisses(), anyProvider.getNumberOfMisses());
     }
