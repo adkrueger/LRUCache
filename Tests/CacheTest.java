@@ -136,7 +136,7 @@ public class CacheTest {
         anyProvider.addObject("FB", "FaceBook");
         anyProvider.addObject("Ea", "Electronic Arts");
 
-        Cache cache = new LRUCache<Object, Object>(anyProvider, 2);
+        Cache<Object, Object> cache = new LRUCache<Object, Object>(anyProvider, 2);
 
         assertEquals(cache.get("Ea"), "Electronic Arts");
         assertEquals(cache.get("FB"), "FaceBook");
